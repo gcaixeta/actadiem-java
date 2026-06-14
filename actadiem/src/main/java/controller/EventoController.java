@@ -11,8 +11,7 @@ public class EventoController {
         eventoDAO = dao;
     }
 
-    public boolean registrarEvento(Evento evento) {
+    public void registrarEvento(Evento evento) {
         Long id = eventoDAO.salvar(evento);
-        return id != null;
     }
 }

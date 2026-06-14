@@ -15,12 +15,12 @@ public class EventoDAO {
     }
 
     public Long salvar(Evento evento) {
-        String sql = "INSERT INTO eventos (titulo, descricao) VALUES (?, ?);";
+        String sql = "INSERT INTO evento (titulo, descricao) VALUES (?, ?)";
         try (var ps = conn.prepareStatement(sql)) {
-            ps.setString(0, evento.getTitulo());
-            ps.setString(1, evento.getDescricao());
+            ps.setString(1, evento.getTitulo().trim());
+            ps.setString(2, evento.getDescricao().trim());
 
-            return ps.executeLargeUpdate();
+            return (long) ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Nao foi possivel salvar o evento.",e);
         }

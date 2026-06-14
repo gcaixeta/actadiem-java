@@ -8,7 +8,7 @@ CREATE TABLE evento (
   id BIGSERIAL PRIMARY KEY,
   titulo VARCHAR(50) NOT NULL,
   descricao VARCHAR(500),
-  data DATE NOT NULL,
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
   usuario_id BIGINT NOT NULL,
   CONSTRAINT fk_usuario
     FOREIGN KEY (usuario_id)

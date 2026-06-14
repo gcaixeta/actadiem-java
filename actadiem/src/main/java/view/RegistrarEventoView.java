@@ -1,6 +1,7 @@
 package view;
 
 import controller.EventoController;
+import dao.EventoDAO;
 import model.Evento;
 
 import javax.swing.*;
@@ -13,6 +14,7 @@ public class RegistrarEventoView extends JFrame {
     private EventoController eventoController;
 
     public RegistrarEventoView() {
+        eventoController = new EventoController(new EventoDAO());
         setTitle("Actadiem - Registrar Evento");
         setSize(500, 350);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -82,7 +84,6 @@ public class RegistrarEventoView extends JFrame {
             return;
         }
 
-        // Aqui você chamaria seu controller/service para salvar
         eventoController.registrarEvento(new Evento(titulo, descricao));
 
         JOptionPane.showMessageDialog(
@@ -92,7 +93,6 @@ public class RegistrarEventoView extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE
         );
 
-        // Limpa os campos
         tituloField.setText("");
         descricaoField.setText("");
     }

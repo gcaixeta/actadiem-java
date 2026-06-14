@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class BancoDeDados {
     private static Connection conn;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/actadiem";
+    private static final String URL = "jdbc:postgresql://localhost:5432/actadiem";
     private static final String USER = "admin";
     private static final String PASSWORD = "senha123";
 
