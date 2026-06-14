@@ -19,6 +19,9 @@ CREATE TABLE evento (
 INSERT INTO usuario (nome, email) 
 VALUES ('Gustavo Rosa', 'gstvcaixeta@gmail.com');
 
+INSERT INTO usuario (nome, email) 
+VALUES ('Carol Peres', 'carolperes@gmail.com');
+
 
 
 

@@ -39,4 +39,8 @@ public class Evento {
     public LocalDate getDate() {
         return data;
     }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
 }

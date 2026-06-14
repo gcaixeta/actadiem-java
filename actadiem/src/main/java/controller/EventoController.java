@@ -3,6 +3,9 @@ package controller;
 import dao.EventoDAO;
 import model.Evento;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public class EventoController {
 
     private final EventoDAO eventoDAO;
@@ -12,6 +15,10 @@ public class EventoController {
     }
 
     public void registrarEvento(Evento evento) {
-        Long id = eventoDAO.salvar(evento, UsuarioController.getUsuarioAtivo());
+        eventoDAO.salvar(evento, UsuarioController.getUsuarioAtivo());
+    }
+
+    public List<Evento> listarEventosHoje() {
+        return eventoDAO.listarPorData(LocalDate.now(), UsuarioController.getUsuarioAtivo());
     }
 }
