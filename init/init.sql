@@ -54,6 +54,47 @@ CREATE TABLE tarefa (
     ON DELETE CASCADE
 );
 
+CREATE TABLE material (
+  id BIGSERIAL PRIMARY KEY,
+  titulo VARCHAR(50) NOT NULL,
+  descricao VARCHAR(500),
+  tipo INTEGER NOT NULL,
+  url VARCHAR(500),
+  usuario_id BIGINT NOT NULL,
+  CONSTRAINT fk_material_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuario(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE material_tarefa (
+  material_id BIGINT NOT NULL,
+  tarefa_id BIGINT NOT NULL,
+  PRIMARY KEY (material_id, tarefa_id),
+  CONSTRAINT fk_mt_material
+    FOREIGN KEY (material_id)
+    REFERENCES material(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_mt_tarefa
+    FOREIGN KEY (tarefa_id)
+    REFERENCES tarefa(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE material_objetivo (
+  material_id BIGINT NOT NULL,
+  objetivo_id BIGINT NOT NULL,
+  PRIMARY KEY (material_id, objetivo_id),
+  CONSTRAINT fk_mo_material
+    FOREIGN KEY (material_id)
+    REFERENCES material(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_mo_objetivo
+    FOREIGN KEY (objetivo_id)
+    REFERENCES objetivo(id)
+    ON DELETE CASCADE
+);
+
 INSERT INTO usuario (nome, email) 
 VALUES ('Gustavo Rosa', 'gstvcaixeta@gmail.com');
 

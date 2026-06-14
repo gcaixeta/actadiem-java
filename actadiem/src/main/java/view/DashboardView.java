@@ -51,6 +51,7 @@ public class DashboardView extends JFrame {
             {"H\u00e1bitos", "habitos"},
             {"Objetivos", "objetivos"},
             {"Tarefas", "tarefas"},
+            {"Materiais", "materiais"},
         };
 
         for (int i = 0; i < items.length; i++) {
@@ -91,6 +92,7 @@ public class DashboardView extends JFrame {
         contentPanel.add(new HabitoPanel(), "habitos");
         contentPanel.add(new ObjetivoPanel(), "objetivos");
         contentPanel.add(new TarefaPanel(), "tarefas");
+        contentPanel.add(new MaterialPanel(), "materiais");
 
         return contentPanel;
     }
