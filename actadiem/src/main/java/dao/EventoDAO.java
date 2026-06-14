@@ -62,4 +62,33 @@ public class EventoDAO {
 
         return eventos;
     }
+
+    public void atualizar(Evento evento) {
+        String sql = "UPDATE evento SET titulo = ?, descricao = ?, data = ? WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, evento.getTitulo().trim());
+            ps.setString(2, evento.getDescricao().trim());
+
+            LocalDate data = evento.getDate();
+            if (data == null) {
+                data = LocalDate.now();
+            }
+            ps.setDate(3, Date.valueOf(data));
+            ps.setLong(4, evento.getId());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Nao foi possivel atualizar o evento.", e);
+        }
+    }
+
+    public void deletar(Long id) {
+        String sql = "DELETE FROM evento WHERE id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Nao foi possivel deletar o evento.", e);
+        }
+    }
 }
