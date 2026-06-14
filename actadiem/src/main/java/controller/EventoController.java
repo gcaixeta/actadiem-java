@@ -12,6 +12,6 @@ public class EventoController {
     }
 
     public void registrarEvento(Evento evento) {
-        Long id = eventoDAO.salvar(evento);
+        Long id = eventoDAO.salvar(evento, UsuarioController.getUsuarioAtivo());
     }
 }
