@@ -47,6 +47,8 @@ public class ObjetivoPanel extends JPanel {
 
         tituloField = new JTextField(20);
         descricaoField = new JTextArea(5, 20);
+        descricaoField.setLineWrap(true);
+        descricaoField.setWrapStyleWord(true);
         statusCombo = new JComboBox<>(StatusObjetivo.values());
         salvarButton = new JButton("Salvar");
         cancelarButton = new JButton("Cancelar");

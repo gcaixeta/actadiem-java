@@ -64,6 +64,8 @@ public class MaterialPanel extends JPanel {
 
         tituloField = new JTextField(20);
         descricaoField = new JTextArea(3, 20);
+        descricaoField.setLineWrap(true);
+        descricaoField.setWrapStyleWord(true);
         tipoCombo = new JComboBox<>(TipoMaterial.values());
         urlField = new JTextField(20);
         salvarButton = new JButton("Salvar");

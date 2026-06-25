@@ -7,13 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Fluxo da Revisao Diaria: percorre os eventos do dia anterior, um por vez,
- * permitindo dar uma nota de 1 a 5 e um comentario opcional para cada um.
- *
- * Monta a fila com os eventos de ontem e mantem o indice da atividade atual;
- * a tela chama {@link #avaliar(int, String)} para registrar a nota e avancar.
- */
 public class RevisaoDiariaController {
     private final EventoDAO eventoDAO;
 

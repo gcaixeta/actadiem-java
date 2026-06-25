@@ -10,7 +10,7 @@ CREATE TABLE evento (
   descricao VARCHAR(500),
   nota INTEGER CHECK (nota IS NULL OR nota BETWEEN 1 AND 5),
   comentario VARCHAR(500),
-  data TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  data DATE NOT NULL DEFAULT CURRENT_DATE,
   usuario_id BIGINT NOT NULL,
   CONSTRAINT fk_usuario
     FOREIGN KEY (usuario_id)

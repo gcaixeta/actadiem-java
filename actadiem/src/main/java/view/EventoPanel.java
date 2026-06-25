@@ -55,6 +55,8 @@ public class EventoPanel extends JPanel {
 
         tituloField = new JTextField(20);
         descricaoField = new JTextArea(5, 20);
+        descricaoField.setLineWrap(true);
+        descricaoField.setWrapStyleWord(true);
         salvarButton = new JButton("Registrar");
         cancelarButton = new JButton("Cancelar");
         cancelarButton.setVisible(false);

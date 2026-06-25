@@ -51,6 +51,8 @@ public class TarefaPanel extends JPanel {
 
         tituloField = new JTextField(20);
         descricaoField = new JTextArea(5, 20);
+        descricaoField.setLineWrap(true);
+        descricaoField.setWrapStyleWord(true);
         prioridadeCombo = new JComboBox<>(Prioridade.values());
         concluidaCheck = new JCheckBox("Conclu\u00edda");
         dataLimiteSpinner = new JSpinner(new SpinnerDateModel());
