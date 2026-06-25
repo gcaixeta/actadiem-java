@@ -8,6 +8,8 @@ CREATE TABLE evento (
   id BIGSERIAL PRIMARY KEY,
   titulo VARCHAR(50) NOT NULL,
   descricao VARCHAR(500),
+  nota INTEGER CHECK (nota IS NULL OR nota BETWEEN 1 AND 5),
+  comentario VARCHAR(500),
   data TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   usuario_id BIGINT NOT NULL,
   CONSTRAINT fk_usuario
@@ -95,7 +97,21 @@ CREATE TABLE material_objetivo (
     ON DELETE CASCADE
 );
 
-INSERT INTO usuario (nome, email) 
+CREATE TABLE evento_objetivo (
+  evento_id BIGINT NOT NULL,
+  objetivo_id BIGINT NOT NULL,
+  PRIMARY KEY (evento_id, objetivo_id),
+  CONSTRAINT fk_eo_evento
+    FOREIGN KEY (evento_id)
+    REFERENCES evento(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_eo_objetivo
+    FOREIGN KEY (objetivo_id)
+    REFERENCES objetivo(id)
+    ON DELETE CASCADE
+);
+
+INSERT INTO usuario (nome, email)
 VALUES ('Gustavo Rosa', 'gstvcaixeta@gmail.com');
 
 INSERT INTO usuario (nome, email) 

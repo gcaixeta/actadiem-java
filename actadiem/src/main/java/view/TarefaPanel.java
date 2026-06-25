@@ -2,6 +2,7 @@ package view;
 
 import controller.TarefaController;
 import dao.TarefaDAO;
+import event.DataChangeBus;
 import model.Prioridade;
 import model.Tarefa;
 
@@ -193,6 +194,7 @@ public class TarefaPanel extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             tarefaController.deletar(selecionado.getId());
             carregarTarefas();
+            DataChangeBus.publish(DataChangeBus.Topic.TAREFAS);
         }
     }
 
@@ -237,6 +239,7 @@ public class TarefaPanel extends JPanel {
         }
 
         carregarTarefas();
+        DataChangeBus.publish(DataChangeBus.Topic.TAREFAS);
     }
 
     private static class TarefaListRenderer extends DefaultListCellRenderer {

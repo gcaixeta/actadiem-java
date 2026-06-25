@@ -6,6 +6,7 @@ import controller.TarefaController;
 import dao.MaterialDAO;
 import dao.ObjetivoDAO;
 import dao.TarefaDAO;
+import event.DataChangeBus;
 import model.*;
 
 import javax.swing.*;
@@ -30,6 +31,8 @@ public class MaterialPanel extends JPanel {
     private TarefaController tarefaController;
     private ObjetivoController objetivoController;
     private Long editandoId;
+    private final DataChangeBus.Listener objetivosListener = this::carregarObjetivos;
+    private final DataChangeBus.Listener tarefasListener = this::carregarTarefas;
 
     public MaterialPanel() {
         materialController = new MaterialController(new MaterialDAO());
@@ -121,6 +124,7 @@ public class MaterialPanel extends JPanel {
         tarefasList.setCellRenderer(new TarefaLinkRenderer());
         tarefasList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tarefasList.setVisibleRowCount(3);
+        CheckboxLists.enable(tarefasList);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -139,6 +143,7 @@ public class MaterialPanel extends JPanel {
         objetivosList.setCellRenderer(new ObjetivoLinkRenderer());
         objetivosList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         objetivosList.setVisibleRowCount(3);
+        CheckboxLists.enable(objetivosList);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -185,20 +190,38 @@ public class MaterialPanel extends JPanel {
         return panel;
     }
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        DataChangeBus.subscribe(DataChangeBus.Topic.OBJETIVOS, objetivosListener);
+        DataChangeBus.subscribe(DataChangeBus.Topic.TAREFAS, tarefasListener);
+    }
+
+    @Override
+    public void removeNotify() {
+        DataChangeBus.unsubscribe(DataChangeBus.Topic.OBJETIVOS, objetivosListener);
+        DataChangeBus.unsubscribe(DataChangeBus.Topic.TAREFAS, tarefasListener);
+        super.removeNotify();
+    }
+
     private void carregarTarefas() {
+        List<Tarefa> selecionados = tarefasList.getSelectedValuesList();
         tarefasListModel.clear();
         List<Tarefa> tarefas = tarefaController.listarTodos();
         for (Tarefa tarefa : tarefas) {
             tarefasListModel.addElement(tarefa);
         }
+        selecionarItens(tarefasList, selecionados);
     }
 
     private void carregarObjetivos() {
+        List<Objetivo> selecionados = objetivosList.getSelectedValuesList();
         objetivosListModel.clear();
         List<Objetivo> objetivos = objetivoController.listarTodos();
         for (Objetivo objetivo : objetivos) {
             objetivosListModel.addElement(objetivo);
         }
+        selecionarItens(objetivosList, selecionados);
     }
 
     private void carregarMateriais() {

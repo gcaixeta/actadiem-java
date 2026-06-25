@@ -2,6 +2,7 @@ package view;
 
 import controller.ObjetivoController;
 import dao.ObjetivoDAO;
+import event.DataChangeBus;
 import model.Objetivo;
 import model.StatusObjetivo;
 
@@ -164,6 +165,7 @@ public class ObjetivoPanel extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             objetivoController.deletar(selecionado.getId());
             carregarObjetivos();
+            DataChangeBus.publish(DataChangeBus.Topic.OBJETIVOS);
         }
     }
 
@@ -202,6 +204,7 @@ public class ObjetivoPanel extends JPanel {
         }
 
         carregarObjetivos();
+        DataChangeBus.publish(DataChangeBus.Topic.OBJETIVOS);
     }
 
     private static class ObjetivoListRenderer extends DefaultListCellRenderer {

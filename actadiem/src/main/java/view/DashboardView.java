@@ -47,6 +47,7 @@ public class DashboardView extends JFrame {
         sidebar.add(new JSeparator(), gbc);
 
         String[][] items = {
+            {"Revis\u00e3o Di\u00e1ria", "revisao"},
             {"Eventos", "eventos"},
             {"H\u00e1bitos", "habitos"},
             {"Objetivos", "objetivos"},
@@ -88,6 +89,7 @@ public class DashboardView extends JFrame {
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
+        contentPanel.add(new RevisaoDiariaPanel(), "revisao");
         contentPanel.add(new EventoPanel(), "eventos");
         contentPanel.add(new HabitoPanel(), "habitos");
         contentPanel.add(new ObjetivoPanel(), "objetivos");

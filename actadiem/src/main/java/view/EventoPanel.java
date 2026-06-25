@@ -1,37 +1,48 @@
 package view;
 
 import controller.EventoController;
+import controller.ObjetivoController;
 import dao.EventoDAO;
+import dao.ObjetivoDAO;
+import event.DataChangeBus;
 import model.Evento;
+import model.Objetivo;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventoPanel extends JPanel {
     private JTextField tituloField;
     private JTextArea descricaoField;
+    private JList<Objetivo> objetivosList;
+    private DefaultListModel<Objetivo> objetivosListModel;
     private JButton salvarButton;
     private JButton cancelarButton;
     private JList<Evento> eventosList;
     private DefaultListModel<Evento> listModel;
     private EventoController eventoController;
+    private ObjetivoController objetivoController;
     private Long editandoId;
+    private final DataChangeBus.Listener objetivosListener = this::carregarObjetivos;
 
     public EventoPanel() {
         eventoController = new EventoController(new EventoDAO());
+        objetivoController = new ObjetivoController(new ObjetivoDAO());
         setLayout(new BorderLayout(10, 10));
 
         add(criarPainelSaudacao(), BorderLayout.NORTH);
         add(criarPainelFormulario(), BorderLayout.WEST);
         add(criarPainelResumo(), BorderLayout.CENTER);
 
+        carregarObjetivos();
         carregarEventosHoje();
     }
 
     private JPanel criarPainelSaudacao() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel label = new JLabel("O que est\u00e1 prestes a acontecer?");
+        JLabel label = new JLabel("O que está prestes a acontecer?");
         label.setFont(label.getFont().deriveFont(Font.BOLD, 16f));
         panel.add(label);
         return panel;
@@ -51,7 +62,7 @@ public class EventoPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        panel.add(new JLabel("T\u00edtulo:"), gbc);
+        panel.add(new JLabel("Título:"), gbc);
 
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -62,17 +73,40 @@ public class EventoPanel extends JPanel {
         gbc.gridy = 1;
         gbc.weightx = 0;
         gbc.weighty = 0;
-        panel.add(new JLabel("Descri\u00e7\u00e3o:"), gbc);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        panel.add(new JLabel("Descrição:"), gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
+        gbc.weighty = 0.5;
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(new JScrollPane(descricaoField), gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         gbc.gridy = 2;
+        gbc.weightx = 0;
         gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        panel.add(new JLabel("Objetivos:"), gbc);
+
+        objetivosListModel = new DefaultListModel<>();
+        objetivosList = new JList<>(objetivosListModel);
+        objetivosList.setCellRenderer(new ObjetivoLinkRenderer());
+        objetivosList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        objetivosList.setVisibleRowCount(4);
+        CheckboxLists.enable(objetivosList);
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.5;
+        panel.add(new JScrollPane(objetivosList), gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.weighty = 0;
+        gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
         JPanel botoesPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
@@ -109,6 +143,28 @@ public class EventoPanel extends JPanel {
         return panel;
     }
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        DataChangeBus.subscribe(DataChangeBus.Topic.OBJETIVOS, objetivosListener);
+    }
+
+    @Override
+    public void removeNotify() {
+        DataChangeBus.unsubscribe(DataChangeBus.Topic.OBJETIVOS, objetivosListener);
+        super.removeNotify();
+    }
+
+    private void carregarObjetivos() {
+        List<Objetivo> selecionados = objetivosList.getSelectedValuesList();
+        objetivosListModel.clear();
+        List<Objetivo> objetivos = objetivoController.listarTodos();
+        for (Objetivo objetivo : objetivos) {
+            objetivosListModel.addElement(objetivo);
+        }
+        selecionarObjetivos(selecionados);
+    }
+
     private void carregarEventosHoje() {
         listModel.clear();
         List<Evento> eventos = eventoController.listarEventosHoje();
@@ -127,8 +183,23 @@ public class EventoPanel extends JPanel {
         editandoId = selecionado.getId();
         tituloField.setText(selecionado.getTitulo());
         descricaoField.setText(selecionado.getDescricao());
+        selecionarObjetivos(selecionado.getObjetivos());
         salvarButton.setText("Atualizar");
         cancelarButton.setVisible(true);
+    }
+
+    private void selecionarObjetivos(List<Objetivo> selecionados) {
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < objetivosListModel.getSize(); i++) {
+            Objetivo item = objetivosListModel.getElementAt(i);
+            for (Objetivo sel : selecionados) {
+                if (item.getId().equals(sel.getId())) {
+                    indices.add(i);
+                    break;
+                }
+            }
+        }
+        objetivosList.setSelectedIndices(indices.stream().mapToInt(Integer::intValue).toArray());
     }
 
     private void excluirEvento() {
@@ -141,7 +212,7 @@ public class EventoPanel extends JPanel {
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Excluir o evento \"" + selecionado.getTitulo() + "\"?",
-                "Confirmar exclus\u00e3o",
+                "Confirmar exclusão",
                 JOptionPane.YES_NO_OPTION
         );
 
@@ -155,6 +226,7 @@ public class EventoPanel extends JPanel {
         editandoId = null;
         tituloField.setText("");
         descricaoField.setText("");
+        objetivosList.clearSelection();
         salvarButton.setText("Registrar");
         cancelarButton.setVisible(false);
     }
@@ -164,19 +236,22 @@ public class EventoPanel extends JPanel {
         String descricao = descricaoField.getText().trim();
 
         if (titulo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "O t\u00edtulo \u00e9 obrigat\u00f3rio!", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "O título é obrigatório!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        Evento evento = new Evento(titulo, descricao);
+        evento.setObjetivos(objetivosList.getSelectedValuesList());
+
         if (editandoId != null) {
-            Evento evento = new Evento(titulo, descricao);
             evento.setId(editandoId);
             eventoController.atualizar(evento);
             cancelarEdicao();
         } else {
-            eventoController.registrarEvento(new Evento(titulo, descricao));
+            eventoController.registrarEvento(evento);
             tituloField.setText("");
             descricaoField.setText("");
+            objetivosList.clearSelection();
         }
 
         carregarEventosHoje();
@@ -188,7 +263,37 @@ public class EventoPanel extends JPanel {
                 JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             if (value instanceof Evento evento) {
-                setText(evento.getTitulo() + " - " + evento.getDescricao());
+                StringBuilder sb = new StringBuilder();
+                sb.append(evento.getTitulo()).append(" - ").append(evento.getDescricao());
+
+                if (!evento.getObjetivos().isEmpty()) {
+                    sb.append(" | Objetivos: ");
+                    for (int i = 0; i < evento.getObjetivos().size(); i++) {
+                        if (i > 0) sb.append(", ");
+                        sb.append(evento.getObjetivos().get(i).getTitulo());
+                    }
+                }
+
+                setText(sb.toString());
+            }
+            return c;
+        }
+    }
+
+    private static class ObjetivoLinkRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof Objetivo objetivo) {
+                String status = switch (objetivo.getStatus()) {
+                    case EM_PLANEJAMENTO -> "Planejamento";
+                    case PLANEJADO -> "Planejado";
+                    case EM_EXECUCAO -> "Execução";
+                    case ALCANCADO -> "Alcançado";
+                    case NAO_ALCANCADO -> "Não alcançado";
+                };
+                setText(objetivo.getTitulo() + " (" + status + ")");
             }
             return c;
         }
